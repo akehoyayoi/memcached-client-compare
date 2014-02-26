@@ -1,0 +1,27 @@
+## general
+*.jar
+*.pyc
+*.pyo
+*.swo
+*.swp
+*.orig
+.history
+
+
+## IDEA
+/*.idea
+/*.idea_modules
+/*.iml
+/*.iws
+
+
+## play2
+/logs
+
+## sbt
+/project/project
+/project/target
+/target
+
+target/
+
