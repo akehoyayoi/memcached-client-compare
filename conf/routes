@@ -3,9 +3,11 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
-GET     /xmemcached                 controllers.Application.xmemcached(totalRequests : Int ?= 1 , bodyLength : Int?= 1)
-GET     /memcontinuationed          controllers.Application.memcontinuationed(totalRequests : Int ?= 1 , bodyLength : Int?= 1)
+GET     /                   controllers.Application.index
+GET     /xmemcached         controllers.Application.xmemcached(totalRequests : Int ?= 1 , bodyLength : Int?= 1)
+GET     /memcontinuationed  controllers.Application.memcontinuationed(totalRequests : Int ?= 1 , bodyLength : Int?= 1)
+GET     /akka               controllers.Application.akka(totalRequests : Int ?= 1 , bodyLength : Int?= 1)
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

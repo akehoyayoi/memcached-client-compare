@@ -7,7 +7,7 @@ object ServerBuild extends Build {
   val graphPluginSettings = net.virtualvoid.sbt.graph.Plugin.graphSettings
   val serverSettings = Defaults.defaultSettings ++ playSettings ++ graphPluginSettings ++ Seq(
     // Add your own project settings here
-    scalaVersion := "2.10.2",
+    scalaVersion := "2.10.0",
     scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked", "-Yrecursion", "50"),
     javacOptions  ++= Seq("-Xlint:unchecked", "-Xlint:deprecation"),
     checksums in update := Nil,

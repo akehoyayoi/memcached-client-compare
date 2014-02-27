@@ -2,10 +2,21 @@ package controllers
 
 import play.api._
 import play.api.mvc._
-import java.io._
-import com.dongxiguo.memcontinuationed.{Memcontinuationed, StorageAccessor}
 import net.rubyeye.xmemcached.MemcachedClient
+import com.dongxiguo.memcontinuationed.{Memcontinuationed,StorageAccessor}
+import java.io._
+import java.net._
+import scala.util.continuations.reset
 import scala.util.control.Exception.Catcher
+import java.nio.channels.AsynchronousChannelGroup
+import java.util.concurrent.Executors
+import scala.concurrent.duration._
+import scala.concurrent.Await
+import akka.util.Timeout
+
+import com.klout.akkamemcached.RealMemcachedClient
+import com.klout.akkamemcached.Serialization.JBoss
+
 
 case class MyKey(override val key: String) extends StorageAccessor[String] {
   override def encode(output: OutputStream, data: String, flags: Int) {
@@ -47,14 +58,42 @@ object Application extends Controller {
       scala.Console.err.print(e)
   }
 
+  lazy val memcontinuationedClient = {
+    val threadPool = Executors.newCachedThreadPool()
+    val channelGroup = AsynchronousChannelGroup.withThreadPool(threadPool)
+
+    // The locator determines where the memcached server is.
+    // You may want to implement ketama hashing here.
+    def locator(accessor: StorageAccessor[_]) = {
+      new InetSocketAddress("localhost", 11211)
+    }
+    new Memcontinuationed(channelGroup, locator)
+  }
+
   def memcontinuationed(totalRequests : Int , bodyLength : Int) = Action {
-    val memcached = CompareMemcachedClient.memcontinuationed
+    val memcached = memcontinuationedClient
+    val s = ""
+//    val s = (1 to totalRequests).flatMap { _ =>
+//      val k = MyKey(s"kkkkkkkkkkkkkkkk${rand.nextInt(32)}")
+//      val v = "v" * 1024 * bodyLength
+//      memcached.set(k,v)
+//      val res: Option[String] = Option(memcached.require(k))
+//      res.getOrElse("null")
+//    }.mkString
+    Ok(s"length=${s.length}\n")
+  }
+
+  import scala.concurrent.Future
+
+  lazy val akkaClient = new RealMemcachedClient(List(("localhost", 11211)), 1)
+  def akka(totalRequests : Int , bodyLength : Int) = Action {
+    val memcached = akkaClient
     val s = (1 to totalRequests).flatMap { _ =>
-      val k = MyKey(s"kkkkkkkkkkkkkkkk${rand.nextInt(32)}")
+      val k = s"kkkkkkkkkkkkkkkk${rand.nextInt(32)}"
       val v = "v" * 1024 * bodyLength
-      // [[RuntimeException: java.lang.NoSuchMethodError: com.dongxiguo.memcontinuationed.Memcontinuationed.set(Lcom/dongxiguo/memcontinuationed/StorageAccessor;Ljava/lang/Object;JLscala/PartialFunction;)V]]
-      memcached.set(k,v)
-      val res: Option[String] = Option(memcached.require(k))
+      memcached.set(k, v , 1 hour)
+      val valueFuture = memcached.get(k)
+      val res: Option[String] = Await.result(valueFuture, 5 seconds)
       res.getOrElse("null")
     }.mkString
     Ok(s"length=${s.length}\n")
