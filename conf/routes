@@ -5,7 +5,6 @@
 # Home page
 GET     /                   controllers.Application.index
 GET     /xmemcached         controllers.Application.xmemcached(totalRequests : Int ?= 1 , bodyLength : Int?= 1)
-GET     /memcontinuationed  controllers.Application.memcontinuationed(totalRequests : Int ?= 1 , bodyLength : Int?= 1)
 GET     /akka               controllers.Application.akka(totalRequests : Int ?= 1 , bodyLength : Int?= 1)
 
 
