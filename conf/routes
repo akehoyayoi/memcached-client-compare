@@ -5,7 +5,8 @@
 # Home page
 GET     /                   controllers.Application.index
 GET     /xmemcached         controllers.Application.xmemcached(totalRequests : Int ?= 1 , bodyLength : Int?= 1)
-GET     /akka               controllers.Application.akka(totalRequests : Int ?= 1 , bodyLength : Int?= 1)
+GET     /akka/composite     controllers.Application.akkaComposite(totalRequests : Int ?= 1 , bodyLength : Int?= 1)
+GET     /akka/individual    controllers.Application.akkaIndividual(totalRequests : Int ?= 1 , bodyLength : Int?= 1)
 
 
 # Map static resources from the /public folder to the /assets URL path
